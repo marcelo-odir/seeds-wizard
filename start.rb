@@ -5,9 +5,57 @@ require 'tty-progressbar'
 require 'csv'
 require './seeds'
 
-ficheiro = "./out.csv"
 prompt = TTY::Prompt.new
 seed = Seed.new
+
+def csv_output(qteRegister, header, tipos, bar, seed, prompt)
+    csv_file = "./out.csv"
+
+    CSV.open(csv_file, "wb") do |csv|
+        csv << header
+        qteRegister.times do
+            bar.advance
+            linha = []
+            tipos.each do |tipo|
+                linha << seed.select(tipo)
+            end
+            csv << linha
+        end
+    end
+end
+
+def sql_output(qteRegister, headers, tipos, bar, seed, prompt)
+    sql_file = "./out.sql"
+
+    tableName = prompt.ask("Entre com o nome da tabela: ")
+
+    #SQL query = INSERT INTO table_name (column1, column2, column3, ...) VALUES (value1, value2, value3, ...);
+    slq1de3 = "INSERT INTO #{tableName} ("
+    sql2de3 = ") VALUES ("
+    sql3de3 = ");"
+
+    out_file = File.new(sql_file, "w")
+        qteRegister.times do
+            bar.advance
+
+            sql = ""
+            sql << slq1de3
+            headers.each do |header|
+                sql << "#{header}, " if header != headers.last
+                sql << "#{header} "  if header == headers.last
+            end
+            sql << sql2de3
+            tipos.each do |tipo|
+                sql << "'#{seed.select(tipo)}', " if tipo != tipos.last
+                sql << "'#{seed.select(tipo)}' "  if tipo == tipos.last
+            end
+            sql << sql3de3
+            out_file.puts(sql)
+        end
+    out_file.close
+end
+
+saida = prompt.select("Entre com o tipo de saida: ", %w"CSV SQL")
 
 numCol = prompt.ask("Quantas colunas irá ter ?", convert: :integer) do |q|
     q.convert :integer
@@ -30,17 +78,8 @@ end
 
 bar = TTY::ProgressBar.new("a processar... [:bar] ET::elapsed ETA::eta :rate/s :percent", total: qteRegister)
 
+csv_output(qteRegister, header, tipos, bar, seed, prompt) if saida == 'CSV'
 
-CSV.open(ficheiro, "wb") do |csv|
-    csv << header
-    qteRegister.times do
-        bar.advance
-        linha = []
-        tipos.each do |tipo|
-            linha << seed.select(tipo)
-        end
-        csv << linha
-    end
-end
+sql_output(qteRegister, header, tipos, bar, seed, prompt) if saida == 'SQL'
 
 puts "Ficheiro criado."
