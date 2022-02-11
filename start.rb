@@ -17,7 +17,7 @@ def csv_output(qteRegister, header, tipos, bar, seed, prompt)
             bar.advance
             linha = []
             tipos.each do |tipo|
-                linha << seed.select(tipo)
+                linha << eval("seed.#{tipo}")
             end
             csv << linha
         end
@@ -46,8 +46,8 @@ def sql_output(qteRegister, headers, tipos, bar, seed, prompt)
             end
             sql << sql2de3
             tipos.each do |tipo|
-                sql << "'#{seed.select(tipo)}', " if tipo != tipos.last
-                sql << "'#{seed.select(tipo)}' "  if tipo == tipos.last
+                sql << "'#{eval("seed.#{tipo}")}', " if tipo != tipos.last
+                sql << "'#{eval("seed.#{tipo}")}' "  if tipo == tipos.last
             end
             sql << sql3de3
             out_file.puts(sql)
@@ -64,10 +64,13 @@ end
 
 header = []
 tipos = []
+lista = Seed.instance_methods(false)
+lista = lista.map {|x| x.to_s}
+lista = lista.sort
 numCol.times do |i|
     entrada = prompt.ask("Entre com a descrição #{i}:")
     header << entrada
-    tipo = prompt.select("Entre com o tipo do campo #{i}:", seed.list)
+    tipo = prompt.select("Entre com o tipo do campo #{i}:", lista)
     tipos << tipo
 end
 

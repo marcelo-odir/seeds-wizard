@@ -1,61 +1,13 @@
 
+#New Fakers can be insert adding new methods in the class Seed above.
+# https://github.com/faker-ruby/faker
+
 require 'faker'
 
 class Seed
 
     def initialize
         Faker::Config.locale = 'pt'
-    end
-
-    def list
-        %w(name email city country job colorName currencyCode birthday avatar lorem number cellphone datetime username password ipv4 url userAgent price)
-    end
-
-    def select (index)
-        case index
-        when 'name'
-            self.name
-        when 'email'
-            self.email
-        when 'city'
-            self.city
-        when 'country'
-            self.country
-        when 'job'
-            self.job
-        when 'company'
-            self.company
-        when 'colorName'
-            self.colorName
-        when 'currencyCode'
-            self.currencyCode
-        when 'birthday'
-            self.birthday
-        when 'avatar'
-            self.avatar
-        when 'lorem'
-            self.lorem
-        when 'number'
-            self.number
-        when 'cellphone'
-            self.cellphone
-        when 'datetime'
-            self.datetime
-        when 'username'
-            self.username
-        when 'password'
-            self.password
-        when 'ipv4'
-            self.ipv4
-        when 'url'
-            self.url
-        when 'userAgent'
-            self.userAgent
-        when 'price'
-            self.price
-        else
-          "You gave me #{x} -- I have no idea what to do with that."
-        end
     end
 
     def name
