@@ -55,11 +55,11 @@ def sql_output(qteRegister, headers, tipos, bar, seed, prompt)
     out_file.close
 end
 
-saida = prompt.select("Entre com o tipo de saida: ", %w"CSV SQL")
+saida = prompt.select("Switch the output file format: ", %w"CSV SQL")
 
-numCol = prompt.ask("Quantas colunas irá ter ?", convert: :integer) do |q|
+numCol = prompt.ask("How many column ?", convert: :integer) do |q|
     q.convert :integer
-    q.messages[:convert?] = "O valor acima precisa ser um número inteiro"
+    q.messages[:convert?] = "Please, enter a integer number."
 end
 
 header = []
@@ -68,21 +68,21 @@ lista = Seed.instance_methods(false)
 lista = lista.map {|x| x.to_s}
 lista = lista.sort
 numCol.times do |i|
-    entrada = prompt.ask("Entre com a descrição #{i}:")
+    entrada = prompt.ask("Enter the header name #{i+1}:")
     header << entrada
-    tipo = prompt.select("Entre com o tipo do campo #{i}:", lista)
+    tipo = prompt.select("Enter the type of column #{i+1}:", lista)
     tipos << tipo
 end
 
-qteRegister = prompt.ask("Entre com quantidade de registros: ", convert: :integer) do |q|
+qteRegister = prompt.ask("How many record? ", convert: :integer) do |q|
     q.convert :integer
-    q.messages[:convert?] = "O valor acima precisa ser um número inteiro"
+    q.messages[:convert?] = "Please, enter a integer number."
 end
 
-bar = TTY::ProgressBar.new("a processar... [:bar] ET::elapsed ETA::eta :rate/s :percent", total: qteRegister)
+bar = TTY::ProgressBar.new("Processing... [:bar] ET::elapsed ETA::eta :rate/s :percent", total: qteRegister)
 
 csv_output(qteRegister, header, tipos, bar, seed, prompt) if saida == 'CSV'
 
 sql_output(qteRegister, header, tipos, bar, seed, prompt) if saida == 'SQL'
 
-puts "Ficheiro criado."
+puts "file created."
